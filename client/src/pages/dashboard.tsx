@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import VideoPlayer from "@/components/video-player";
 import PlaylistSidebar from "@/components/playlist-sidebar";
 import AccountManager from "@/components/account-manager";

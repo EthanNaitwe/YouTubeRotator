@@ -6,6 +6,8 @@ import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Videos
+  // GET /api/videos - Returns array of all videos in playlist
+  // Response: Video[] (id, youtubeId, title, channel, duration, thumbnailUrl, addedAt)
   app.get("/api/videos", async (req, res) => {
     try {
       const videos = await storage.getVideos();
@@ -15,6 +17,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // POST /api/videos - Adds a new video to the playlist
+  // Request body: InsertVideo (youtubeId, title, channel, duration, thumbnailUrl)
+  // Response: Video (newly created video with id and addedAt)
   app.post("/api/videos", async (req, res) => {
     try {
       const video = insertVideoSchema.parse(req.body);
@@ -36,6 +41,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // DELETE /api/videos/:id - Removes a video from the playlist
+  // URL parameter: id (number) - Video ID to delete
+  // Response: Success message
   app.delete("/api/videos/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -52,6 +60,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Accounts
+  // GET /api/accounts - Returns array of all active accounts (passwords excluded)
+  // Response: Account[] (id, email, status, lastUsed, isActive) - password field omitted for security
   app.get("/api/accounts", async (req, res) => {
     try {
       const accounts = await storage.getAccounts();
@@ -63,6 +73,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // POST /api/accounts - Creates a new account
+  // Request body: InsertAccount (email, password, status)
+  // Response: Account (newly created account without password field)
   app.post("/api/accounts", async (req, res) => {
     try {
       const account = insertAccountSchema.parse(req.body);
@@ -80,6 +93,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PATCH /api/accounts/:id - Updates an existing account
+  // URL parameter: id (number) - Account ID to update
+  // Request body: Partial<Account> (any account fields to update)
+  // Response: Account (updated account without password field)
   app.patch("/api/accounts/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -98,6 +115,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // DELETE /api/accounts/:id - Deactivates an account (soft delete)
+  // URL parameter: id (number) - Account ID to deactivate
+  // Response: Success message
   app.delete("/api/accounts/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -114,6 +134,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Viewing Sessions
+  // POST /api/viewing-sessions - Records a new viewing session
+  // Request body: InsertViewingSession (videoId, accountId, duration)
+  // Response: ViewingSession (newly created session with id and viewedAt)
   app.post("/api/viewing-sessions", async (req, res) => {
     try {
       const session = insertViewingSessionSchema.parse(req.body);
@@ -129,6 +152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Settings
+  // GET /api/settings - Returns current application settings
+  // Response: Settings (id, viewDuration, accountSwitchInterval, autoShuffle, loopPlaylist)
   app.get("/api/settings", async (req, res) => {
     try {
       const settings = await storage.getSettings();
@@ -138,6 +163,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PATCH /api/settings - Updates application settings
+  // Request body: Partial<InsertSettings> (any settings fields to update)
+  // Response: Settings (updated settings object)
   app.patch("/api/settings", async (req, res) => {
     try {
       const updates = req.body;
@@ -149,6 +177,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Statistics
+  // GET /api/statistics - Returns aggregated viewing statistics
+  // Response: { videosWatched: number, totalTime: number, activeAccounts: number, playlistSize: number }
   app.get("/api/statistics", async (req, res) => {
     try {
       const stats = await storage.getStatistics();

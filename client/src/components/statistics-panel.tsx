@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Play, Clock, Users, List } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
